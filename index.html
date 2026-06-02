@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ruta en Autocaravana por Riaño</title>
+    <meta
+      name="description"
+      content="Guia para un viaje en autocaravana por Riaño y la Montaña Oriental Leonesa."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="hero" id="inicio">
+      <div class="hero__overlay"></div>
+      <nav class="topbar container" id="topbar">
+        <div class="brand">
+          <img class="brand__logo" src="img/Logo.jpg" alt="Logo Xplore Van Life" />
+          <span>Xplore Van Life</span>
+        </div>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mainMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="main-menu" id="mainMenu">
+          <a href="#areas-ac" class="menu-link">Areas AC</a>
+          <a href="#tiempo" class="menu-link">Meteo</a>
+          <a href="#notas-viaje" class="menu-link">Notas</a>
+          <a href="#tramos" class="menu-link">Tramos</a>
+          <a href="#presupuesto" class="menu-link">Presupuesto</a>
+
+          <div class="menu-dropdown" id="planRutaDropdown">
+            <button class="menu-btn" id="planRutaToggle" type="button" aria-expanded="false" aria-controls="planRutaMenu">
+              Plan de ruta
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="menu-panel" id="planRutaMenu">
+              <a href="#dia1">Dia 1 · Llegada y paseo por Riaño</a>
+              <a href="#dia2">Dia 2 · Riaño, miradores y barco</a>
+              <a href="#dia3">Dia 3 · Anciles, Lois, Buron y Acebedo</a>
+              <a href="#dia4">Dia 4 · Panderrueda y Posada de Valdeon</a>
+            </div>
+          </div>
+
+          <div class="menu-dropdown" id="localidadesDropdown">
+            <button class="menu-btn" id="localidadesToggle" type="button" aria-expanded="false" aria-controls="localidadesMenu">
+              Localidades
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="menu-panel" id="localidadesMenu">
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Ria%C3%B1o_(Le%C3%B3n)">Riaño</a>
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Lois_(Le%C3%B3n)">Lois</a>
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Bur%C3%B3n_(Le%C3%B3n)">Buron</a>
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Acebedo">Acebedo</a>
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Posada_de_Valde%C3%B3n">Posada de Valdeon</a>
+              <a target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Oseja_de_Sajambre">Oseja de Sajambre</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="hero__content container reveal">
+        <p class="eyebrow">Riaño · Montaña Oriental Leonesa</p>
+        <h1>Ruta en Autocaravana por Riaño y la Montaña Leonesa</h1>
+        <p>
+          4 dias entre embalses, miradores, pueblos de montana y paisajes
+          espectaculares.
+        </p>
+
+        <div class="hero-budget glass-card budget-planner">
+          <p class="budget-planner__hint">Calculadora de presupuesto estimado en tiempo real.</p>
+
+          <div class="budget-layout">
+            <article class="budget-panel">
+              <h3>Combustible</h3>
+              <div class="budget-grid">
+                <label class="budget-field">
+                  <span>Kilometros de ruta</span>
+                  <input id="budgetKm" type="number" min="0" step="1" value="850" />
+                </label>
+                <label class="budget-field">
+                  <span>Consumo (L/100 km)</span>
+                  <input id="budgetConsumo" type="number" min="0" step="0.1" placeholder="Ej: 10.5" />
+                </label>
+                <label class="budget-field">
+                  <span>Precio gasoil (€/L)</span>
+                  <input id="budgetPrecioGasoil" type="number" min="0" step="0.001" placeholder="Ej: 1.55" />
+                </label>
+                <label class="budget-field">
+                  <span>Gasoil gastado (€)</span>
+                  <input id="budgetGasoilGastado" type="number" min="0" step="0.01" placeholder="Si lo sabes, tiene prioridad" />
+                </label>
+              </div>
+            </article>
+
+            <article class="budget-panel">
+              <h3>Otros gastos</h3>
+              <div class="budget-grid budget-grid--short">
+                <label class="budget-field">
+                  <span>Comidas gastadas (€)</span>
+                  <input id="budgetComidas" type="number" min="0" step="0.01" placeholder="Ej: 120" />
+                </label>
+
+                <label class="budget-field budget-field--check">
+                  <input id="budgetBarcoHecho" type="checkbox" />
+                  <span>Barco realizado</span>
+                </label>
+                <label class="budget-field">
+                  <span>Coste barco (€)</span>
+                  <input id="budgetBarcoCoste" type="number" min="0" step="0.01" value="20" />
+                </label>
+
+                <label class="budget-field">
+                  <span>Importe areas (€)</span>
+                  <input id="budgetAreas" type="number" min="0" step="0.01" value="0" />
+                </label>
+              </div>
+            </article>
+          </div>
+
+          <div class="budget-summary">
+            <p><span>Gasoil estimado por consumo</span><strong id="budgetFuelEstimate">0,00 EUR</strong></p>
+            <p><span>Gasoil aplicado al total</span><strong id="budgetFuelUsed">0,00 EUR</strong></p>
+            <p class="budget-total-row"><span>Total estimado final</span><strong id="budgetTotal">0,00 EUR</strong></p>
+          </div>
+
+          <div class="budget-actions">
+            <button id="saveBudgetPlanner" class="btn btn--primary" type="button">Guardar presupuesto</button>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <main>
+      <section class="section container reveal" id="selector-localidad">
+        <div class="section__heading">
+          <p class="eyebrow">Inicio rapido</p>
+          <h2>Elige la localidad de destino</h2>
+          <p>En cada parada puedes consultar informacion del lugar o abrir la ruta directa desde Plasencia.</p>
+        </div>
+
+        <div class="locality-grid">
+          <article class="glass-card locality-card">
+            <h3>Riaño</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Ria%C3%B1o_(Le%C3%B3n)">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Ria%C3%B1o&travelmode=driving">Ir</a>
+            </div>
+          </article>
+          <article class="glass-card locality-card">
+            <h3>Lois</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Lois_(Le%C3%B3n)">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Lois&travelmode=driving">Ir</a>
+            </div>
+          </article>
+          <article class="glass-card locality-card">
+            <h3>Buron</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Bur%C3%B3n_(Le%C3%B3n)">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Buron&travelmode=driving">Ir</a>
+            </div>
+          </article>
+          <article class="glass-card locality-card">
+            <h3>Acebedo</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Acebedo">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Acebedo&travelmode=driving">Ir</a>
+            </div>
+          </article>
+          <article class="glass-card locality-card">
+            <h3>Posada de Valdeon</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Posada_de_Valde%C3%B3n">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Posada+de+Valdeon&travelmode=driving">Ir</a>
+            </div>
+          </article>
+          <article class="glass-card locality-card">
+            <h3>Oseja de Sajambre</h3>
+            <div class="locality-actions">
+              <a class="btn btn--ghost locality-btn" target="_blank" rel="noopener noreferrer" href="https://es.wikipedia.org/wiki/Oseja_de_Sajambre">Ver info</a>
+              <a class="btn btn--primary locality-btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Oseja+de+Sajambre&travelmode=driving">Ir</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="resumen">
+        <div class="section__heading">
+          <p class="eyebrow">Resumen general</p>
+          <h2>Plan de ruta</h2>
+        </div>
+
+        <div class="summary-grid">
+          <article class="glass-card summary-card">
+            <h3>Viernes</h3>
+            <p>Plasencia → Riaño</p>
+            <span>370 km · 4h 30 min</span>
+          </article>
+          <article class="glass-card summary-card">
+            <h3>Sabado</h3>
+            <p>Riaño + miradores + barco</p>
+            <span>Ruta local</span>
+          </article>
+          <article class="glass-card summary-card">
+            <h3>Domingo</h3>
+            <p>Valle de Anciles + Lois + Buron + Acebedo</p>
+            <span>60 km</span>
+          </article>
+          <article class="glass-card summary-card">
+            <h3>Lunes</h3>
+            <p>Panderrueda + Posada de Valdeon + Plasencia</p>
+            <span>420 km · 5h aprox</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="areas-ac">
+        <div class="section__heading">
+          <p class="eyebrow">Pernocta</p>
+          <h2>Areas de Autocaravanas</h2>
+          <p>Lugares recomendados para pernoctar durante la ruta</p>
+        </div>
+
+        <div class="ac-grid">
+          <article class="glass-card ac-card">
+            <div class="ac-head">
+              <h3>Area de Autocaravanas de Riaño</h3>
+              <span class="ac-badge">Pernocta gratuita</span>
+            </div>
+            <p class="ac-localidad"><strong>Localidad:</strong> Riaño</p>
+            <p class="ac-gps"><strong>GPS:</strong> 42.9755, -5.0017</p>
+            <p class="rating">Riaño <span>★★★★★</span></p>
+            <ul class="service-list">
+              <li>✅ Agua</li>
+              <li>✅ Vaciado de grises</li>
+              <li>✅ Vaciado de negras</li>
+              <li>✅ Zona tranquila</li>
+              <li>✅ Junto al embalse</li>
+              <li>✅ Cerca de restaurantes</li>
+              <li>✅ Cerca de supermercado</li>
+            </ul>
+            <p>
+              Una de las mejores areas para autocaravanas del norte de España. Ubicada junto al embalse y a pocos minutos caminando del centro.
+              Perfecta para visitar los miradores de Riaño y disfrutar de los atardeceres.
+            </p>
+            <div class="poi-actions">
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9755,-5.0017">📍 Navegar</a>
+              <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9755,-5.0017">🗺️ Abrir en Google Maps</a>
+            </div>
+            <p class="rating-note">⭐ Valoracion: 3.86/5</p>
+          </article>
+
+          <article class="glass-card ac-card">
+            <div class="ac-head">
+              <h3>Area de Autocaravanas de Buron</h3>
+              <span class="ac-badge">Pernocta gratuita</span>
+            </div>
+            <p class="ac-localidad"><strong>Localidad:</strong> Buron</p>
+            <p class="ac-gps"><strong>GPS:</strong> C. Don Tomas Allende, 24994 Burón, León</p>
+            <p class="rating">Buron <span>★★★★☆</span></p>
+            <ul class="service-list">
+              <li>✅ Agua</li>
+              <li>✅ Vaciado de grises</li>
+              <li>✅ Vaciado de negras</li>
+              <li>✅ Zona tranquila</li>
+              <li>✅ Entorno natural</li>
+              <li>✅ Pernocta permitida</li>
+              <li>✅ Muy poco masificada</li>
+            </ul>
+            <p>
+              Excelente opcion para quienes buscan tranquilidad absoluta en plena montaña.
+              Perfecta como alternativa a Riaño e ideal para descansar y explorar la zona oriental de la montaña leonesa.
+            </p>
+            <div class="poi-actions">
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.0230,-5.0515">📍 Navegar</a>
+              <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.0230,-5.0515">🗺️ Abrir en Google Maps</a>
+            </div>
+            <p class="rating-note">⭐ Valoracion: 4.3/5</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section weather-section reveal" id="tiempo">
+        <div class="container">
+          <div class="section__heading">
+            <p class="eyebrow">API del tiempo</p>
+            <h2>Meteo en tiempo real</h2>
+            <p>Riaño, Lois, Buron, Acebedo, Posada de Valdeon y Oseja de Sajambre</p>
+          </div>
+          <div class="weather-grid" id="weatherCards"></div>
+          <div id="forecastPanel" class="forecast-panel glass-card" hidden></div>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="notas-viaje">
+        <div class="section__heading">
+          <p class="eyebrow">Personal</p>
+          <h2>Notas de viaje</h2>
+          <p>Guarda recordatorios, ideas o pendientes para la ruta.</p>
+        </div>
+        <article class="glass-card notes-card">
+          <label for="tripNotes">Tus notas</label>
+          <p class="notes-hint">Espacio rapido para apuntes clave de ruta, gastos y recordatorios.</p>
+          <textarea id="tripNotes" maxlength="200" placeholder="Escribe aqui tus notas del viaje..."></textarea>
+          <div class="notes-actions">
+            <p id="tripNotesCount" class="notes-count" aria-live="polite">0/200</p>
+            <button id="saveTripNotes" class="btn btn--primary" type="button">Guardar notas</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="section container reveal" id="galeria">
+        <div class="section__heading">
+          <p class="eyebrow">Galeria real</p>
+          <h2>Paisajes que vas a vivir en ruta</h2>
+        </div>
+        <div class="masonry-grid">
+          <a class="gallery-item" href="img/Pantano de riaño.jpg" data-lightbox="Riaño" data-caption="Embalse de Riaño"><img src="img/Pantano de riaño.jpg" alt="Embalse de Riaño" loading="lazy" /></a>
+          <a class="gallery-item" href="img/columpio gigante.webp" data-lightbox="Riaño" data-caption="Columpio Gigante de Riaño"><img src="img/columpio gigante.webp" alt="Columpio Gigante de Riaño" loading="lazy" /></a>
+          <a class="gallery-item" href="img/Mirador del Tombo.jpg" data-lightbox="Riaño" data-caption="Mirador del Tombo"><img src="img/Mirador del Tombo.jpg" alt="Mirador del Tombo" loading="lazy" /></a>
+          <a class="gallery-item" href="img/Lois.jpg" data-lightbox="Riaño" data-caption="Iglesia de Lois"><img src="img/Lois.jpg" alt="Iglesia de Lois" loading="lazy" /></a>
+          <a class="gallery-item" href="img/Buron.jpg" data-lightbox="Riaño" data-caption="Buron"><img src="img/Buron.jpg" alt="Buron" loading="lazy" /></a>
+          <a class="gallery-item" href="img/Posada de Valdeon.jpg" data-lightbox="Riaño" data-caption="Posada de Valdeon"><img src="img/Posada de Valdeon.jpg" alt="Posada de Valdeon" loading="lazy" /></a>  
+          <a class="gallery-item" href="img/Riaño.webp" data-lightbox="Riaño" data-caption="Riaño"><img src="img/Riaño.webp" alt="Riaño" loading="lazy" /></a>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="fotografia">
+        <div class="section__heading">
+          <p class="eyebrow">Fotografia</p>
+          <h2>Los mejores lugares para fotografiar</h2>
+        </div>
+        <div class="photo-grid">
+          <article class="glass-card photo-card"><h3>📸 Mirador de Valcayo</h3><p>Mejor hora: Atardecer</p></article>
+          <article class="glass-card photo-card"><h3>📸 Columpio Gigante</h3><p>Mejor hora: Amanecer o atardecer</p></article>
+          <article class="glass-card photo-card"><h3>📸 Mirador del Tombo</h3><p>Mejor hora: Amanecer</p></article>
+          <article class="glass-card photo-card"><h3>📸 Embalse de Riaño</h3><p>Mejor hora: Ultima luz del dia</p></article>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="mapa-seccion">
+        <div class="section__heading">
+          <p class="eyebrow">Mapa interactivo</p>
+          <h2>Ruta completa</h2>
+        </div>
+        <div id="map" class="glass-card" aria-label="Mapa de ruta"></div>
+        <p id="mapStatus" class="map-status">Cargando ruta...</p>
+      </section>
+
+      <section class="section container reveal" id="tramos">
+        <div class="section__heading">
+          <p class="eyebrow">Tramos de carretera</p>
+          <h2>De un punto a otro con enlace directo</h2>
+        </div>
+        <div class="route-legs">
+          <article class="glass-card route-leg">
+            <h3>Plasencia → Riaño</h3>
+            <p>370 km · 4h 30 min aprox</p>
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Plasencia&destination=Ria%C3%B1o&travelmode=driving">Ir</a>
+          </article>
+
+          <article class="glass-card route-leg">
+            <h3>Riaño → Mirador de Valcayo</h3>
+            <p>5 km · 10 min aprox</p>
+            <p class="rating">Mirador de Valcayo <span>★★★★★</span></p>
+            <div class="poi-actions">
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9834,-5.0186">📍 Navegar</a>
+              <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=42.9834,-5.0186&travelmode=driving">📍 Navegar</a>
+            </div>
+          </article>
+
+          <article class="glass-card route-leg">
+            <h3>Riaño → Lois → Buron → Acebedo</h3>
+            <p>60 km aprox</p>
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Acebedo&waypoints=Lois%7CBuron&travelmode=driving">Ir</a>
+          </article>
+
+          <article class="glass-card route-leg">
+            <h3>Acebedo → Panderrueda → Posada de Valdeon</h3>
+            <p>55 km · 1h 20 min aprox</p>
+            <div class="poi-actions">
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.1308,-4.9138">📍 Navegar</a>
+              <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Acebedo&destination=43.1308,-4.9138&waypoints=Posada+de+Valdeon&travelmode=driving">📍 Navegar</a>
+            </div>
+          </article>
+
+          <article class="glass-card route-leg">
+            <h3>Posada de Valdeon → Plasencia</h3>
+            <p>420 km · 5h aprox</p>
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Posada+de+Valdeon&destination=Plasencia&travelmode=driving">Ir</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="estado-viaje">
+        <div class="section__heading">
+          <p class="eyebrow">Estado del viaje</p>
+          <h2>Checklist por dia</h2>
+        </div>
+        <div class="checklist-grid">
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="trip-day-friday" /> Viernes · Completado</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="trip-day-saturday" /> Sabado · Completado</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="trip-day-sunday" /> Domingo · Completado</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="trip-day-monday" /> Lunes · Completado</label>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="presupuesto">
+        <div class="section__heading">
+          <p class="eyebrow">Planificacion</p>
+          <h2>Presupuesto estimado</h2>
+        </div>
+        <div class="glass-card budget-table-wrap budget-planner budget-shortcut">
+          <p class="budget-planner__hint">La calculadora está disponible en el inicio para usarla directamente al abrir la guía.</p>
+          <div class="budget-summary">
+            <p class="budget-total-row"><span>Total estimado actual</span><strong id="budgetSectionTotal">0,00 EUR</strong></p>
+          </div>
+          <div class="budget-actions">
+            <a class="btn btn--ghost" href="#inicio">Ir a la calculadora</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container reveal" id="itinerario">
+        <div class="section__heading">
+          <p class="eyebrow">Itinerario</p>
+          <h2>Guia dia por dia</h2>
+        </div>
+
+        <article class="day-card glass-card" id="dia1" data-day="1">
+          <h3>Dia 1 · Viernes · Plasencia a Riaño</h3>
+          <div class="must-see">
+            <h4>Imprescindibles del dia</h4>
+            <p>No te pierdas:</p>
+            <ul>
+              <li>⭐ Mirador de Valcayo</li>
+              <li>⭐ Columpio Gigante</li>
+              <li>⭐ Embalse de Riaño</li>
+            </ul>
+          </div>
+          <div class="day-meta">
+            <p>Salida: 17:00 - 17:30</p>
+            <p>Distancia: 370 km</p>
+            <p>Duracion: 4h 30 min</p>
+            <p>Llegada prevista: 22:00</p>
+          </div>
+          <div class="day-grid">
+            <article class="poi-card">
+              <h4>Que hacer</h4>
+              <ul>
+                <li>Paseo junto al embalse de Riaño</li>
+                <li>Mirador de Las Hazas <a class="inline-copy" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9750,-5.0108">📍 Navegar</a></li>
+                <li>Mirador de Valcayo <a class="inline-copy" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9834,-5.0186">📍 Navegar</a></li>
+                <li>Columpio Gigante de Riaño</li>
+              </ul>
+              <button class="btn btn--ghost add-quehacer-btn" type="button" data-storage-key="quehacer-dia1">+ Añadir</button>
+              <ul class="custom-quehacer-list" data-storage-key="quehacer-dia1"></ul>
+              <p class="rating">Mirador de Valcayo <span>★★★★★</span></p>
+            </article>
+            <article class="poi-card">
+              <h4>Comer</h4>
+              <p><strong>Parrilla El Molino</strong></p>
+              <ul>
+                <li>Chuleton</li>
+                <li>Cecina</li>
+                <li>Carnes a la brasa</li>
+              </ul>
+              <p>Precio orientativo: 25-35 EUR</p>
+            </article>
+            <article class="poi-card">
+              <h4>Ficha de ruta premium</h4>
+              <div class="route-facts">
+                <p>🥾 Distancia: 5 km</p>
+                <p>⏱ Duracion: 1h 30 min</p>
+                <p>📈 Desnivel: 120 m</p>
+                <p>🎯 Dificultad: Facil</p>
+                <p>📍 Inicio: Riaño</p>
+                <p>📍 Final: Riaño</p>
+                <p>🌄 Mejor momento: Atardecer</p>
+              </div>
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Mirador+de+Valcayo&waypoints=Mirador+de+Las+Hazas&travelmode=walking">📍 Navegar</a>
+            </article>
+            <article class="poi-card">
+              <h4>Pernocta</h4>
+              <p>Area de Autocaravanas de Riaño.</p>
+              <ul>
+                <li>Vaciado</li>
+                <li>Llenado</li>
+                <li>Zona tranquila</li>
+                <li>Junto al embalse</li>
+              </ul>
+              <p>GPS: 42.9755, -5.0017</p>
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9755,-5.0017">📍 Navegar</a>
+            </article>
+          </div>
+          <div class="day-cta-row">
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9834,-5.0186">📍 Navegar</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Parrilla+El+Molino+Ria%C3%B1o">🍴 Comer</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Mirador+de+Valcayo&travelmode=walking">🥾 Ruta</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.975501,-5.002993">🛌 Pernocta</a>
+          </div>
+        </article>
+
+        <article class="day-card glass-card" id="dia2" data-day="2">
+          <h3>Dia 2 · Sabado · Miradores y barco</h3>
+          <div class="must-see">
+            <h4>Imprescindibles del dia</h4>
+            <p>No te pierdas:</p>
+            <ul>
+              <li>⭐ Ruta de los Miradores</li>
+              <li>⭐ Paseo en Barco</li>
+              <li>⭐ Mirador de Las Hazas</li>
+            </ul>
+          </div>
+          <div class="day-grid">
+            <article class="poi-card">
+              <h4>Que hacer</h4>
+              <p>Ruta de los Miradores + paseo en barco por los Fiordos Leoneses.</p>
+              <ul>
+                <li>Mirador de Valcayo</li>
+                <li>Mirador de Las Hazas</li>
+                <li>Columpio gigante</li>
+                <li>Embalse de Riaño</li>
+                <li>Macizo del Gilbo</li>
+              </ul>
+              <button class="btn btn--ghost add-quehacer-btn" type="button" data-storage-key="quehacer-dia2">+ Añadir</button>
+              <ul class="custom-quehacer-list" data-storage-key="quehacer-dia2"></ul>
+            </article>
+            <article class="poi-card">
+              <h4>Comer</h4>
+              <p><strong>Restaurante El Meson</strong></p>
+              <ul>
+                <li>Cocido leones</li>
+                <li>Cecina</li>
+                <li>Carnes de montana</li>
+              </ul>
+            </article>
+            <article class="poi-card">
+              <h4>Ficha de ruta premium · Ruta de los Miradores</h4>
+              <div class="route-facts">
+                <p>🥾 Distancia: 7 km</p>
+                <p>⏱ Duracion: 2 horas</p>
+                <p>📈 Desnivel: 250 m</p>
+                <p>🎯 Dificultad: Facil</p>
+                <p>📍 Inicio: Riaño</p>
+                <p>📍 Final: Riaño</p>
+                <p>🌄 Mejor momento: Atardecer</p>
+              </div>
+              <p>Opcional: Pico Gilbo (8 km, 4h, 700 m, media-alta).</p>
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Mirador+de+Valcayo&waypoints=Mirador+de+Las+Hazas&travelmode=walking">📍 Navegar</a>
+            </article>
+            <article class="poi-card">
+              <h4>Pernocta</h4>
+              <p>Area de Autocaravanas de Riaño.</p>
+              <p>Actividad recomendada: Riaño en Barco (1h 15min).</p>
+            </article>
+          </div>
+          <div class="day-cta-row">
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Mirador+de+Las+Hazas">📍 Navegar</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Restaurante+El+Meson+Ria%C3%B1o">🍴 Comer</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Mirador+de+Valcayo&travelmode=walking">🥾 Ruta</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9755,-5.0017">🛌 Pernocta</a>
+          </div>
+        </article>
+
+        <article class="day-card glass-card" id="dia3" data-day="3">
+          <h3>Dia 3 · Domingo · Anciles, Lois, Buron y Acebedo</h3>
+          <div class="must-see">
+            <h4>Imprescindibles del dia</h4>
+            <p>No te pierdas:</p>
+            <ul>
+              <li>⭐ Iglesia de Lois</li>
+              <li>⭐ Valle de Anciles</li>
+              <li>⭐ Buron</li>
+            </ul>
+          </div>
+          <div class="day-grid">
+            <article class="poi-card">
+              <h4>Que hacer</h4>
+              <ul>
+                <li>Valle de Anciles</li>
+                <li>Iglesia de Lois, "La Catedral de la Montana" <a class="inline-copy" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=42.9374,-5.0458">📍 Navegar</a></li>
+                <li>Casco tradicional de Lois</li>
+                <li>Calles y casas de montana en Buron y Acebedo</li>
+              </ul>
+              <button class="btn btn--ghost add-quehacer-btn" type="button" data-storage-key="quehacer-dia3">+ Añadir</button>
+              <ul class="custom-quehacer-list" data-storage-key="quehacer-dia3"></ul>
+              <p class="rating">Lois <span>★★★★☆</span></p>
+              <p class="rating">Buron <span>★★★★☆</span></p>
+            </article>
+            <article class="poi-card">
+              <h4>Comer</h4>
+              <p><strong>Restaurante de Lois</strong></p>
+              <p>Comida tradicional leonesa.</p>
+            </article>
+            <article class="poi-card">
+              <h4>Ficha de ruta premium · Valle de Anciles</h4>
+              <div class="route-facts">
+                <p>🥾 Distancia: 6 km</p>
+                <p>⏱ Duracion: 2 horas</p>
+                <p>📈 Desnivel: 150 m</p>
+                <p>🎯 Dificultad: Facil</p>
+                <p>📍 Inicio: Anciles</p>
+                <p>📍 Final: Anciles</p>
+                <p>🌄 Mejor momento: Mañana</p>
+              </div>
+              <p>Entorno: bosques, praderas, arroyo y vistas del embalse.</p>
+              <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Lois&destination=Valle+de+Anciles&travelmode=walking">📍 Navegar</a>
+            </article>
+            <article class="poi-card">
+              <h4>Pernocta</h4>
+              <p>Area de Autocaravanas de Acebedo o regreso al area de Riaño.</p>
+              <p>Etapa en carretera local: 60 km aprox.</p>
+            </article>
+          </div>
+          <div class="day-cta-row">
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Ria%C3%B1o&destination=Acebedo&waypoints=Lois%7CBuron&travelmode=driving">📍 Navegar</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Restaurante+Lois+Le%C3%B3n">🍴 Comer</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Valle+de+Anciles">🥾 Ruta</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.0230,-5.0515">🛌 Pernocta</a>
+          </div>
+        </article>
+
+        <article class="day-card glass-card" id="dia4" data-day="4">
+          <h3>Dia 4 · Lunes · Panderrueda y Posada de Valdeon</h3>
+          <div class="must-see">
+            <h4>Imprescindibles del dia</h4>
+            <p>No te pierdas:</p>
+            <ul>
+              <li>⭐ Mirador del Tombo</li>
+              <li>⭐ Posada de Valdeon</li>
+              <li>⭐ Puerto de Panderrueda</li>
+            </ul>
+          </div>
+          <div class="day-meta">
+            <p>Salida: 14:30</p>
+            <p>Regreso: Posada de Valdeon → Plasencia</p>
+            <p>Distancia: 420 km</p>
+            <p>Llegada prevista: 19:30 - 20:00</p>
+          </div>
+          <div class="day-grid">
+            <article class="poi-card">
+              <h4>Que hacer</h4>
+              <ul>
+                <li>Puerto de Panderrueda</li>
+                <li>Miradores del Valle de Valdeon</li>
+                <li>Posada de Valdeon y arquitectura de piedra</li>
+              </ul>
+              <button class="btn btn--ghost add-quehacer-btn" type="button" data-storage-key="quehacer-dia4">+ Añadir</button>
+              <ul class="custom-quehacer-list" data-storage-key="quehacer-dia4"></ul>
+              <p class="rating">Mirador del Tombo <span>★★★★★</span></p>
+            </article>
+            <article class="poi-card">
+              <h4>Comer</h4>
+              <p><strong>Restaurante Begona · Posada de Valdeon</strong></p>
+              <ul>
+                <li>Fabada</li>
+                <li>Cachopo</li>
+                <li>Carnes de montana</li>
+              </ul>
+            </article>
+            <article class="poi-card">
+              <h4>Ficha de ruta premium · Mirador del Tombo</h4>
+              <div class="route-facts">
+                <p>🥾 Distancia: 2 km</p>
+                <p>⏱ Duracion: 45 min</p>
+                <p>📈 Desnivel: 50 m</p>
+                <p>🎯 Dificultad: Muy facil</p>
+                <p>📍 Inicio: Posada de Valdeon</p>
+                <p>📍 Final: Mirador del Tombo</p>
+                <p>🌄 Mejor momento: Amanecer</p>
+              </div>
+              <p>Panoramica top de los Picos de Europa.</p>
+              <div class="poi-actions">
+                <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.1632,-4.9010">📍 Navegar</a>
+                <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.1632,-4.9010">📍 Navegar</a>
+              </div>
+            </article>
+            <article class="poi-card">
+              <h4>Pernocta</h4>
+              <p>Fin de viaje y vuelta a Plasencia.</p>
+              <p>No pernocta intermedia recomendada en este ultimo dia.</p>
+              <p>Puerto de Panderrueda <a class="inline-copy" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=43.1308,-4.9138">📍 Navegar</a></p>
+            </article>
+          </div>
+          <div class="day-cta-row">
+            <a class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Posada+de+Valdeon&destination=Mirador+del+Tombo&travelmode=walking">📍 Navegar</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Restaurante+Begona+Posada+de+Valdeon">🍴 Comer</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=Mirador+del+Tombo">🥾 Ruta</a>
+            <a class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&origin=Posada+de+Valdeon&destination=Plasencia&travelmode=driving">🛌 Pernocta</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="section container reveal" id="que-llevar">
+        <div class="section__heading">
+          <p class="eyebrow">Preparacion</p>
+          <h2>Que llevar</h2>
+        </div>
+        <div class="checklist-grid">
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-prismaticos" /> Prismaticos</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-camara" /> Camara</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-chubasquero" /> Chubasquero</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-botas" /> Botas senderismo</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-bastones" /> Bastones</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-linterna" /> Linterna</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-powerbank" /> Powerbank</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-termica" /> Ropa termica ligera</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-solar" /> Protector solar</label>
+          <label class="glass-card checklist-item"><input type="checkbox" data-persist="gear-gorra" /> Gorra</label>
+          
+        </div>
+      </section>
+    </main>
+
+    <button id="travelModeToggle" class="travel-mode-toggle" type="button" aria-pressed="false">🚐 Modo Viaje</button>
+    <aside id="travelModePanel" class="travel-panel glass-card" hidden>
+      <div class="travel-panel__head">
+        <h3>Modo Viaje</h3>
+        <button id="travelClose" type="button" aria-label="Cerrar modo viaje">✕</button>
+      </div>
+      <p id="travelDayLabel">Dia 1 · Viernes</p>
+      <div class="travel-actions">
+        <a id="travelNav" class="btn btn--primary" target="_blank" rel="noopener noreferrer" href="#">📍 Navegar</a>
+        <a id="travelEat" class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="#">🍴 Comer</a>
+        <a id="travelRoute" class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="#">🥾 Ruta</a>
+        <a id="travelSleep" class="btn btn--ghost" target="_blank" rel="noopener noreferrer" href="#">🛌 Pernocta</a>
+      </div>
+      <button id="travelNextDay" class="btn btn--primary" type="button">Siguiente dia</button>
+    </aside>
+
+    <div id="lightbox" class="lightbox" hidden>
+      <button id="lightboxClose" class="lightbox-close" type="button" aria-label="Cerrar imagen">✕</button>
+      <img id="lightboxImage" src="" alt="Imagen ampliada" />
+      <p id="lightboxCaption"></p>
+    </div>
+
+    <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+    <footer class="footer">
+      <div class="container footer__content">
+        <p class="footer-quote">
+          Hay lugares que se visitan. Riaño es uno de esos lugares que se recuerdan para siempre.
+        </p>
+        <div class="footer-stats">
+          <span>Distancia total: 850 km</span>
+          <span>Conduccion: 9h 30min aprox</span>
+          <span>Rutas: 4</span>
+          <span>Localidades: 6</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>
